@@ -43,7 +43,7 @@ class AppCubit extends Cubit<AppState> {
     return emit(PickImageState());
   }
 
-  void upload() async {
+  Future upload() async {
     if (image != null) {
       emit(UploadLoadingState());
       final useCase = UploadUseCase(uploadRepo: uploadRepo);
@@ -58,7 +58,7 @@ class AppCubit extends Cubit<AppState> {
     }
   }
 
-  void getGallery() async {
+  Future getGallery() async {
     emit(GalleryLoadingState());
     final useCase = GalleryUseCase(galleryRepo: galleryRepo);
     galleryReq = await useCase(NoParams());

@@ -47,242 +47,262 @@ class Gallery extends StatelessWidget {
                         ),
                         fit: BoxFit.cover),
                   ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(30),
-                          child: Row(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await cubit.getGallery();
+                    },
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(30),
+                            child: Row(
+                              children: [
+                                BlocConsumer<AuthCubit, AuthState>(
+                                  listener: (context, state) {},
+                                  builder: (context, state) {
+                                    AuthCubit authCubit =
+                                        AuthCubit.get(context);
+                                    return Text(
+                                      'Welcome\n${authCubit.loginData?.user!.name?.split(' ')[1]}',
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.w300),
+                                    );
+                                  },
+                                ),
+                                Spacer(),
+                                CircleAvatar(
+                                  radius: 32,
+                                  backgroundImage:
+                                      AssetImage('assets/images/user.png'),
+                                )
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               BlocConsumer<AuthCubit, AuthState>(
-                                listener: (context, state) {},
-                                builder: (context, state) {
+                                listener:
+                                    (BuildContext context, AuthState state) {},
+                                builder:
+                                    (BuildContext context, AuthState state) {
                                   AuthCubit authCubit = AuthCubit.get(context);
-                                  return Text(
-                                    'Welcome\n${authCubit.loginData?.user!.name?.split(' ')[1]}',
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w300),
+                                  return MaterialButton(
+                                    onPressed: () {
+                                      authCubit.logout(context);
+                                    },
+                                    minWidth: 120,
+                                    height: 40,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(16)),
+                                    color: Colors.white,
+                                    child: Row(children: [
+                                      Image(
+                                        image: AssetImage(
+                                            'assets/icons/logout.png'),
+                                      ),
+                                      SizedBox(
+                                        width: MediaQueryValues(context).width *
+                                            .04,
+                                      ),
+                                      Text(
+                                        'log out',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400),
+                                      )
+                                    ]),
                                   );
                                 },
                               ),
-                              Spacer(),
-                              CircleAvatar(
-                                radius: 32,
-                                backgroundImage:
-                                    AssetImage('assets/images/user.png'),
-                              )
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            BlocConsumer<AuthCubit, AuthState>(
-                              listener:
-                                  (BuildContext context, AuthState state) {},
-                              builder: (BuildContext context, AuthState state) {
-                                AuthCubit authCubit = AuthCubit.get(context);
-                                return MaterialButton(
-                                  onPressed: () {
-                                    authCubit.logout(context);
-                                  },
-                                  minWidth: 120,
-                                  height: 40,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16)),
-                                  color: Colors.white,
-                                  child: Row(children: [
-                                    Image(
-                                      image:
-                                          AssetImage('assets/icons/logout.png'),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                          MediaQueryValues(context).width * .04,
-                                    ),
-                                    Text(
-                                      'log out',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                    )
-                                  ]),
-                                );
-                              },
-                            ),
-                            MaterialButton(
-                              onPressed: () {
-                                showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (BuildContext cxt) {
-                                    return Align(
-                                      alignment: Alignment.center,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(40),
-                                        child: Material(
-                                          color:
-                                              Color.fromRGBO(255, 255, 255, .3),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(32)),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 60, vertical: 40),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                    cubit
-                                                        .getImageFromGallery()
-                                                        .then((value) {
-                                                      cubit.upload();
-                                                      cubit.getGallery();
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    alignment: Alignment.center,
-                                                    height: 50,
-                                                    width: 145,
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            HexColor('#EFD8F9'),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20)),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Image.asset(
-                                                            "assets/icons/gallery.png"),
-                                                        SizedBox(width: 8),
-                                                        Text(
-                                                          'Gallery',
-                                                          style: TextStyle(
-                                                            color: HexColor(
-                                                                '#4A4A4A'),
+                              MaterialButton(
+                                onPressed: () {
+                                  showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (BuildContext cxt) {
+                                      return Align(
+                                        alignment: Alignment.center,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(40),
+                                          child: Material(
+                                            color: Color.fromRGBO(
+                                                255, 255, 255, .3),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(32)),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 60, vertical: 40),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      cubit
+                                                          .getImageFromGallery()
+                                                          .then((value) => cubit
+                                                              .upload()
+                                                              .then((value) => cubit
+                                                                  .getGallery()
+                                                                  .then((value) =>
+                                                                      cubit
+                                                                          .getGallery())));
+                                                    },
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      height: 50,
+                                                      width: 145,
+                                                      decoration: BoxDecoration(
+                                                          color: HexColor(
+                                                              '#EFD8F9'),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20)),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                              "assets/icons/gallery.png"),
+                                                          SizedBox(width: 8),
+                                                          Text(
+                                                            'Gallery',
+                                                            style: TextStyle(
+                                                              color: HexColor(
+                                                                  '#4A4A4A'),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                SizedBox(
-                                                  height: 40,
-                                                ),
-                                                InkWell(
-                                                  onTap: () {
-                                                    Navigator.pop(context);
-                                                    cubit
-                                                        .getImageFromCamera()
-                                                        .then((value) {
-                                                      cubit.upload();
-                                                      cubit.getGallery();
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    alignment: Alignment.center,
-                                                    height: 50,
-                                                    width: 145,
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            HexColor('#EBF6FF'),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20)),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Image.asset(
-                                                            "assets/icons/camera.png"),
-                                                        Text(
-                                                          'Camera',
-                                                          style: TextStyle(
-                                                            color: HexColor(
-                                                                '#4A4A4A'),
+                                                  SizedBox(
+                                                    height: 40,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                      cubit
+                                                          .getImageFromCamera()
+                                                          .then((value) => cubit
+                                                              .upload()
+                                                              .then((value) => cubit
+                                                                  .getGallery()
+                                                                  .then((value) =>
+                                                                      cubit
+                                                                          .getGallery())));
+                                                    },
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      height: 50,
+                                                      width: 145,
+                                                      decoration: BoxDecoration(
+                                                          color: HexColor(
+                                                              '#EBF6FF'),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20)),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                              "assets/icons/camera.png"),
+                                                          Text(
+                                                            'Camera',
+                                                            style: TextStyle(
+                                                              color: HexColor(
+                                                                  '#4A4A4A'),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              minWidth: 120,
-                              height: 40,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16)),
-                              color: Colors.white,
-                              child: Row(children: [
-                                Image(
-                                  image: AssetImage('assets/icons/upload.png'),
-                                ),
-                                SizedBox(
-                                  width: MediaQueryValues(context).width * .04,
-                                ),
-                                Text(
-                                  'upload',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                      );
+                                    },
+                                  );
+                                },
+                                minWidth: 120,
+                                height: 40,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16)),
+                                color: Colors.white,
+                                child: Row(children: [
+                                  Image(
+                                    image:
+                                        AssetImage('assets/icons/upload.png'),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQueryValues(context).width * .04,
+                                  ),
+                                  Text(
+                                    'upload',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                  )
+                                ]),
+                              ),
+                            ],
+                          ),
+                          cubit.galleryReq == null
+                              ? Padding(
+                                  padding: const EdgeInsets.all(70),
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 5,
+                                  ),
                                 )
-                              ]),
-                            ),
-                          ],
-                        ),
-                        cubit.galleryReq == null
-                            ? Padding(
-                                padding: const EdgeInsets.all(70),
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 5,
-                                ),
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 25),
-                                child: GridView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount:
-                                      cubit.galleryReq!.data!.images.length,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3),
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(15),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: NetworkImage(cubit
-                                                    .galleryReq!
-                                                    .data!
-                                                    .images[index]))),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                      ],
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 25),
+                                  child: GridView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount:
+                                        cubit.galleryReq!.data!.images.length,
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3),
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(15),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(cubit
+                                                      .galleryReq!
+                                                      .data!
+                                                      .images[index]))),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                        ],
+                      ),
                     ),
                   ),
                 ),
